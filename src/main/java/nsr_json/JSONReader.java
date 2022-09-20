@@ -28,6 +28,26 @@ public class JSONReader {
         this.vars = getJSONVariables();
     }
 
+    protected JSONReader(Object data) {
+        this.data = data;
+        this.vars = getJSONVariables();
+    }
+
+    private JSONReader(Object data, Map<String, Object> vars) {
+        this.data = data;
+        this.vars = vars;
+    }
+
+    /**
+     * Define a key and make its value to be the base to read from in the next time
+     *
+     * @param key the path to the wanted data can be a single key or a series of keys
+     * @return an instance of {@link JSONReader} with base data is the value of the key
+     */
+    public JSONReader setBreakPoint(String key) {
+        return new JSONReader(get(key), vars);
+    }
+
     /**
      * Fetch all data from the JSON file
      *

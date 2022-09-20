@@ -11,7 +11,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import test_helper.Company;
 import test_helper.Person;
@@ -408,6 +407,41 @@ class JSONReaderTest {
             assertThat(new JSONReader(jsonLoader).getMapAs(".", String.class))
                     .isInstanceOf(Map.class)
                     .isEqualTo(Map.of("map1", "first", "map2", "second"));
+        }
+
+        @Test
+        void setPointShouldReturnAnInstanceFromJSONReader() {
+            var json = new JSONObject("""
+                    {
+                      "map": {
+                        "sub-map": {
+                            "value": "I'm here"
+                        }
+                      }
+                    }
+                    """);
+            when(jsonLoader.getData()).thenReturn(json.toMap());
+
+            assertThat(new JSONReader(jsonLoader).setBreakPoint("map.sub-map"))
+                    .isInstanceOf(JSONReader.class);
+        }
+
+        @Test
+        void getObjectUsingSetPoint() {
+            var json = new JSONObject("""
+                    {
+                      "map": {
+                        "sub-map": {
+                            "value": "I'm here"
+                        }
+                      }
+                    }
+                    """);
+            when(jsonLoader.getData()).thenReturn(json.toMap());
+
+            assertThat(new JSONReader(jsonLoader).setBreakPoint("map.sub-map").get("value"))
+                    .isInstanceOf(Object.class)
+                    .isEqualTo("I'm here");
         }
     }
 
@@ -1271,6 +1305,91 @@ class JSONReaderTest {
             assertThatThrownBy(
                     () -> new JSONReader(jsonLoader).getCustomObject("person", Person.class)
             ).isInstanceOf(ClassCastException.class);
+        }
+    }
+
+    @Nested
+    class ReadFromObjectCases {
+        @Test
+        void getAll() {
+            var json = new JSONObject("""
+                    {
+                      "object": "object"
+                    }
+                    """);
+
+            assertThat(new JSONReader(json.toMap()).getAll())
+                    .isInstanceOf(Object.class)
+                    .isEqualTo(Map.of("object", "object"));
+        }
+
+        @Test
+        void getValueFromMap() {
+            var map = Map.of("key1", "01", "key2", "02");
+
+            assertThat(new JSONReader(map).get("key1"))
+                    .isEqualTo("01");
+        }
+
+        @Test
+        void getValueFromList() {
+            var list = List.of(0, 1, 2);
+
+            assertThat(new JSONReader(list).get("[0]"))
+                    .isEqualTo(0);
+        }
+
+        @Test
+        void getObjectFromNestedMap() {
+            var json = new JSONObject("""
+                    {
+                      "map": {
+                        "sub-map": {
+                            "value": "I'm here"
+                        }
+                      }
+                    }
+                    """);
+
+            assertThat(new JSONReader(json.toMap()).get("map.sub-map.value"))
+                    .isEqualTo("I'm here");
+        }
+
+        @Test
+        void getValidObjectFromJSONArray() {
+            var json = new JSONArray("""
+                    [
+                       "object1",
+                       "object2"
+                     ]
+                    """);
+
+            assertThat(new JSONReader(json.toList()).get("[1]"))
+                    .isInstanceOf(Object.class)
+                    .isEqualTo("object2");
+        }
+
+        @Test
+        void getStringContainsVariablePlaceHolder() {
+            var json = new JSONObject("""
+                    {
+                        "variables": {
+                             "don't-change-me": ", I found YOU"
+                        },
+                       "map": [
+                         {
+                           "sub-map": [
+                             {
+                               "value": "I'm here${don't-change-me}"
+                             }
+                           ]
+                         }
+                       ]
+                     }
+                    """);
+
+            assertThat(new JSONReader(json.toMap()).getString("map[0].sub-map[0].value"))
+                    .isEqualTo("I'm here, I found YOU");
         }
     }
 }

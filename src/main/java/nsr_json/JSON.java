@@ -17,6 +17,7 @@ public class JSON {
 
     /**
      * Read data in the JSON file
+     *
      * @return an instance from {@link JSONReader}
      */
     public JSONReader read() {
@@ -24,6 +25,16 @@ public class JSON {
             jsonFileLoader = JSONFileLoader.getInstance(filePath);
 
         return new JSONReader(jsonFileLoader);
+    }
+
+    /**
+     * Read data in JSON format
+     *
+     * @param data an {@link Object} in the JSON format
+     * @return an instance from {@link JSONReader}
+     */
+    public JSONReader read(@NonNull Object data) {
+        return new JSONReader(data);
     }
 
     /**
