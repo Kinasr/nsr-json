@@ -28,7 +28,7 @@
     </developers>
 
     <scm>
-        <connection>scm:git:ssh://git@github.com/Kinasr/nsr-json.git</connection>
+        <connection>scm:git:ssh://git@github.com:Kinasr/nsr-json.git</connection>
         <developerConnection>scm:git:ssh://git@github.com:Kinasr/nsr-json.git</developerConnection>
         <url>https://github.com/Kinasr/nsr-json/tree/main</url>
     <tag>nsr-json-1.0.0-beta</tag>
