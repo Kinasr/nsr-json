@@ -4,7 +4,7 @@
 
     <groupId>io.github.kinasr</groupId>
     <artifactId>nsr-json</artifactId>
-    <version>1.0.0-beta</version>
+    <version>1.0.0</version>
     <name>NSR-JSON</name>
     <description>A library provides easy and customizable ways to read data from JSON files or
         Objects has JSON format.</description>
@@ -28,9 +28,9 @@
 
     <scm>
         <connection>scm:git:git://github.com/Kinasr/nsr-json.git</connection>
-        <developerConnection>scm:git:ssh://github.com:Kinasr/nsr-json.git</developerConnection>
+        <developerConnection>scm:git:https://github.com/Kinasr/nsr-json.git</developerConnection>
         <url>https://github.com/Kinasr/nsr-json/tree/main</url>
-      <tag>nsr-json-1.0.0-beta</tag>
+      <tag>beta</tag>
   </scm>
 
     <properties>
@@ -154,21 +154,21 @@
                 </executions>
             </plugin>
 
-<!--            <plugin>-->
-<!--                <groupId>org.sonatype.plugins</groupId>-->
-<!--                <artifactId>nexus-staging-maven-plugin</artifactId>-->
-<!--                <version>1.6.7</version>-->
-<!--                <extensions>true</extensions>-->
-<!--                <configuration>-->
-<!--                    <serverId>ossrh</serverId>-->
-<!--                    <nexusUrl>https://s01.oss.sonatype.org/</nexusUrl>-->
-<!--                    <autoReleaseAfterClose>false</autoReleaseAfterClose>-->
-<!--                </configuration>-->
-<!--            </plugin>-->
+            <plugin>
+                <groupId>org.sonatype.plugins</groupId>
+                <artifactId>nexus-staging-maven-plugin</artifactId>
+                <version>1.6.7</version>
+                <extensions>true</extensions>
+                <configuration>
+                    <serverId>ossrh</serverId>
+                    <nexusUrl>https://s01.oss.sonatype.org/</nexusUrl>
+                    <autoReleaseAfterClose>false</autoReleaseAfterClose>
+                </configuration>
+            </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-release-plugin</artifactId>
-                <version>2.5.3</version>
+                <version>3.0.0-M6</version>
                 <configuration>
                     <autoVersionSubmodules>true</autoVersionSubmodules>
                     <useReleaseProfile>false</useReleaseProfile>
