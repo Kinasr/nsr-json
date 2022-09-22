@@ -1,40 +1,43 @@
 package nsr_json;
 
+import exception.JSONFileException;
 import lombok.NonNull;
 
 /**
- * Provide ways to manage JSON file
+ * Provide ways to manage JSON files or JSON objects
  */
 public class JSON {
     public static String DEFAULT_VARIABLES_KEY = "variables";
 
-    private final String filePath;
+    private String filePath;
+    private Object jsonObject;
     private JSONFileLoader jsonFileLoader;
 
+    /**
+     * Create an instance from {@link JSON} class to manage a JSON file
+     * @param filePath the path of the JSON file
+     */
     public JSON(@NonNull String filePath) {
         this.filePath = filePath;
     }
 
     /**
-     * Read data in the JSON file
+     * Create an instance from {@link JSON} class to manage a JSON object
+     * @param jsonObject the json object
+     */
+    public JSON(@NonNull Object jsonObject) {
+        this.jsonObject = jsonObject;
+    }
+
+    /**
+     * Read data in the JSON file or Object
      *
      * @return an instance from {@link JSONReader}
      */
     public JSONReader read() {
-        if (jsonFileLoader == null)
-            jsonFileLoader = JSONFileLoader.getInstance(filePath);
-
-        return new JSONReader(jsonFileLoader);
-    }
-
-    /**
-     * Read data in JSON format
-     *
-     * @param data an {@link Object} in the JSON format
-     * @return an instance from {@link JSONReader}
-     */
-    public JSONReader read(@NonNull Object data) {
-        return new JSONReader(data);
+        return filePath != null ?
+                readFile() :
+                readObject();
     }
 
     /**
@@ -50,5 +53,27 @@ public class JSON {
      */
     public static void closeAll() {
         JSONFileLoader.clearAll();
+    }
+
+    /**
+     * Checking the file path and create an instance form {@link JSONFileLoader} if not exist.
+     * @return an instance from {@link JSONReader}
+     */
+    private JSONReader readFile() {
+        if (filePath == null || filePath.isEmpty() || filePath.isBlank())
+            throw new JSONFileException("File path can't be null or empty");
+
+        if (jsonFileLoader == null)
+            jsonFileLoader = JSONFileLoader.getInstance(filePath);
+
+        return new JSONReader(jsonFileLoader);
+    }
+
+    /**
+     * Passing the JSON object to the JSON reader
+     * @return an instance from {@link JSONReader}
+     */
+    private JSONReader readObject() {
+        return new JSONReader(jsonObject);
     }
 }

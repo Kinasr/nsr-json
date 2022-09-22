@@ -1,17 +1,36 @@
 package exception;
 
+/**
+ * InvalidKeyException is an exception wrong keys
+ */
 public class InvalidKeyException extends RuntimeException{
+    /**
+     * Throw {@link InvalidKeyException} without any attachments
+     */
     public InvalidKeyException() {}
 
-    public InvalidKeyException(String msg) {
-        super(msg);
+    /**
+     * Throw {@link InvalidKeyException} with custom message
+     * @param message exception message
+     */
+    public InvalidKeyException(String message) {
+        super(message);
     }
 
-    public InvalidKeyException(Throwable throwable) {
-        super(throwable);
+    /**
+     * Throw {@link InvalidKeyException} with the cause
+     * @param cause the cause of the exception
+     */
+    public InvalidKeyException(Throwable cause) {
+        super(cause);
     }
 
-    public InvalidKeyException(String msg, Throwable throwable) {
-        super(msg, throwable);
+    /**
+     * Throw {@link InvalidKeyException} with custom message and the cause
+     * @param message exception message
+     * @param cause the cause of the exception
+     */
+    public InvalidKeyException(String message, Throwable cause) {
+        super(message, cause);
     }
 }
