@@ -19,7 +19,7 @@ public class JSONReader {
     private final Map<String, Object> vars;
 
     /**
-     * Creating an instance of {@link JSONReader}
+     * Creating an instance of {@link JSONReader} for JSON files
      *
      * @param loader an instance of {@link JSONReader} class
      */
@@ -28,8 +28,12 @@ public class JSONReader {
         this.vars = getJSONVariables();
     }
 
-    protected JSONReader(Object data) {
-        this.data = data;
+    /**
+     * Creating an instance of {@link JSONReader} for JSON Objects
+     * @param jsonObject JSON object
+     */
+    protected JSONReader(Object jsonObject) {
+        this.data = jsonObject;
         this.vars = getJSONVariables();
     }
 
@@ -188,6 +192,7 @@ public class JSONReader {
      * @param key   the path to the wanted data can be a single key or a series of keys
      * @param clazz the class that data wanted to be parsed for
      * @return the wanted value as {@link T}
+     * @param <T> The class type
      */
     public <T> T getAs(String key, Class<T> clazz) {
         return parseObjectTo(get(key), clazz);
@@ -202,6 +207,7 @@ public class JSONReader {
      * @param key     the path to the wanted data can be a single key or a series of keys
      * @param parsing a {@link Function} that will give you an object to parse it as you want
      * @return will return what the parsing function returns
+     * @param <T> The class type
      */
     public <T> T getAs(String key, Function<Object, T> parsing) {
         return parsing.apply(get(key));
@@ -218,6 +224,7 @@ public class JSONReader {
      * @param key   the path to the wanted data can be a single key or a series of keys
      * @param clazz the class that data wanted to be parsed for
      * @return the wanted value as {@link List<T>}
+     * @param <T> The class type
      */
     public <T> List<T> getListAs(String key, Class<T> clazz) {
         if (key.equals("."))
@@ -237,6 +244,7 @@ public class JSONReader {
      * @param key   the path to the wanted data can be a single key or a series of keys
      * @param clazz the class that data wanted to be parsed for
      * @return the wanted value as {@link Map} of {@link String} and {@link T}
+     * @param <T> The class type
      */
     public <T> Map<String, T> getMapAs(String key, Class<T> clazz) {
         if (key.equals("."))
@@ -254,6 +262,7 @@ public class JSONReader {
      * @param key   the path to the wanted data can be a single key or a series of keys
      * @param clazz the custom object class
      * @return an instance form the custom object with the data if any field not existed in the JSON file will be null
+     * @param <T> The class type
      */
     public <T> T getCustomObject(String key, Class<T> clazz) {
         return getCustomObject(key, clazz, null);
@@ -275,6 +284,7 @@ public class JSONReader {
      * @param supportedCustomObjects supporting custom objects that may be used in the main custom object
      *                               if the main one used as a child object please send it again here
      * @return an instance form the custom object with the data if any field not existed in the JSON file will be null
+     * @param <T> The class type
      */
     public <T> T getCustomObject(String key,
                                  Class<T> clazz,
@@ -302,6 +312,7 @@ public class JSONReader {
      * @param supportedCustomObjects supporting custom objects that may be used in the main custom object
      *                               if the main one used as a child object please send it again here
      * @return an instance form the custom object with the data if any field not existed in the JSON file will be null
+     * @param <T> The class type
      */
     public <T> T getCustomObject(String key,
                                  Class<T> clazz,

@@ -33,6 +33,11 @@ public class JSONFileLoader {
         this.data = loadData();
     }
 
+    /**
+     * Manage instance for {@link JSONFileLoader}
+     * @param filePath JSON file path
+     * @return an instance of {@link JSONFileLoader} if already loaded return it or create a new instance
+     */
     public static JSONFileLoader getInstance(String filePath) {
         if (filePath == null || filePath.isEmpty())
             throw new JSONFileException("File path can't be null or empty");
