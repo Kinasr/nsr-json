@@ -14,6 +14,9 @@ import java.util.regex.Pattern;
 
 import static nsr_json.Helper.*;
 
+/**
+ * A class helps to read data from a JSON file or JSON object
+ */
 public class JSONReader {
     private final Object data;
     private final Map<String, Object> vars;

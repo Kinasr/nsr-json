@@ -7,7 +7,9 @@ import lombok.NonNull;
  * Provide ways to manage JSON files or JSON objects
  */
 public class JSON {
-    // Default key to support variables
+    /**
+     * Default key to support variables
+     */
     public static String DEFAULT_VARIABLES_KEY = "variables";
 
     private String filePath;
