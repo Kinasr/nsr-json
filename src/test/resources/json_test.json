@@ -1,3 +1,68 @@
 {
-  "test": "test"
+  "variables": {
+    "code": 12345
+  },
+  "person": {
+    "id": "12462164789564L",
+    "name": "Ahmed",
+    "age": 35,
+    "isMarred": true,
+    "balance": 10573.65,
+    "graduationDate": "09/20/2005",
+    "marriageDate": "2020-06-23 10:25:55",
+    "children": [
+      "Mohamed",
+      "Ali",
+      "Fatima"
+    ],
+    "favoriteNumbers": [
+      0,
+      5,
+      9
+    ],
+    "currentCompany": {
+      "name": "ABC Company",
+      "email": "abc@abc.com"
+    },
+    "importantNumbers": {
+      "roomNumber": 415,
+      "streetNumber": 10
+    }
+  },
+  "pet": {
+    "name": "Bunny",
+    "age": 5
+  },
+  "pets": [
+    {
+      "name": "Lucy",
+      "age": 10
+    },
+    {
+      "name": "Milo",
+      "age": 11
+    }
+  ],
+  "person2": {
+    "name": "Ali",
+    "email": "ali@email.com",
+    "dateOfBirth": "1990-10-05 00:00:00",
+    "workAt": {
+      "name": "ABC Company",
+      "address": "XYZ City",
+      "numOfEmployees": 100,
+      "establishDate": "1986-04-08 22:00"
+    },
+    "petsList": [
+      {
+        "name": "Lucy",
+        "age": 10
+      },
+      {
+        "name": "Milo",
+        "age": 11
+      }
+    ]
+  },
+  "code": "${code}"
 }

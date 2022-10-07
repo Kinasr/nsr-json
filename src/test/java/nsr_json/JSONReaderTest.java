@@ -203,14 +203,14 @@ class JSONReaderTest {
         void getValidInteger() {
             var json = new JSONObject("""
                     {
-                      "integer": 0
+                      "integer": 10
                     }
                     """);
             when(jsonLoader.getData()).thenReturn(json.toMap());
 
             assertThat(new JSONReader(jsonLoader).getInteger("integer"))
                     .isInstanceOf(Integer.class)
-                    .isEqualTo(0);
+                    .isEqualTo(10);
         }
 
         @Test

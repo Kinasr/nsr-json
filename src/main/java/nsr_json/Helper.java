@@ -3,8 +3,9 @@ package nsr_json;
 import exception.DateFormatException;
 import exception.NotAListException;
 import exception.NotAMapException;
-import lombok.NonNull;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -63,8 +64,31 @@ class Helper {
      */
     protected static <T> T parseObjectTo(Object obj, Class<T> clazz) {
         T v;
+        Method valueOf = null;
+        Object invokedValue = null;
+        var isValueOfMethodUseString = true;
+
         try {
-            v = clazz.cast(obj);
+            valueOf = clazz.getMethod("valueOf", String.class);
+        } catch (NoSuchMethodException ignore) {
+            try {
+                valueOf = clazz.getMethod("valueOf", Object.class);
+                isValueOfMethodUseString = false;
+            } catch (NoSuchMethodException ignored) {
+            }
+        }
+
+        if (valueOf != null) {
+            try {
+                invokedValue = valueOf.invoke(clazz, isValueOfMethodUseString ? obj.toString() : obj);
+            } catch (IllegalAccessException | InvocationTargetException e) {
+                throw new ClassCastException("Can't cast [" + obj + "] to be [" + clazz + "], " +
+                        "can't invoke valueOf method --- " + e);
+            }
+        }
+
+        try {
+            v = clazz.cast(invokedValue != null ? invokedValue : obj);
         } catch (ClassCastException e) {
             throw new ClassCastException("Can't cast [" + obj + "] to be [" + clazz + "] --- " + e);
         }
@@ -116,7 +140,7 @@ class Helper {
      * @param timeZone   optional timezone
      * @return date as {@link Calendar}
      */
-    protected static Calendar parseStringToCalender(@NonNull String stringDate, String dateFormat, String timeZone) {
+    protected static Calendar parseStringToCalender(String stringDate, String dateFormat, String timeZone) {
         var calendar = (timeZone == null || timeZone.isEmpty()) ?
                 Calendar.getInstance() :
                 Calendar.getInstance(TimeZone.getTimeZone(timeZone));
@@ -138,7 +162,7 @@ class Helper {
      * @param obj the value wanted to be parsed
      * @return the parsed value as {@link Long}
      */
-    protected static Long parseObjectToLong(@NonNull Object obj) {
+    protected static Long parseObjectToLong(Object obj) {
         if (obj instanceof String sValue && sValue.endsWith("L")) {
             return Long.parseLong(sValue.replace("L", ""));
         }

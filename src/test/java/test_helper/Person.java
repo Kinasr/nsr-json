@@ -1,12 +1,14 @@
 package test_helper;
 
 import lombok.Data;
+import lombok.experimental.Accessors;
 
 import java.time.LocalDateTime;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Map;
 
+@Accessors(chain = true)
 @Data
 public class Person {
     private Integer id;
@@ -23,6 +25,7 @@ public class Person {
     private Company workAt;
     private List<Company> previousCompanies;
     private Map<String, Company> companiesOrder;
+    private List<Pet> petsList;
 
     public Person(Integer id, String name, LocalDateTime dateOfBirth2) {
         this.id = id;

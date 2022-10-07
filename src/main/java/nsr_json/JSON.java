@@ -1,7 +1,6 @@
 package nsr_json;
 
 import exception.JSONFileException;
-import lombok.NonNull;
 
 /**
  * Provide ways to manage JSON files or JSON objects
@@ -18,17 +17,19 @@ public class JSON {
 
     /**
      * Create an instance from {@link JSON} class to manage a JSON file
+     *
      * @param filePath the path of the JSON file
      */
-    public JSON(@NonNull String filePath) {
+    public JSON(String filePath) {
         this.filePath = filePath;
     }
 
     /**
      * Create an instance from {@link JSON} class to manage a JSON object
+     *
      * @param jsonObject the json object
      */
-    public JSON(@NonNull Object jsonObject) {
+    public JSON(Object jsonObject) {
         this.jsonObject = jsonObject;
     }
 
@@ -60,6 +61,7 @@ public class JSON {
 
     /**
      * Checking the file path and create an instance form {@link JSONFileLoader} if not exist.
+     *
      * @return an instance from {@link JSONReader}
      */
     private JSONReader readFile() {
@@ -74,6 +76,7 @@ public class JSON {
 
     /**
      * Passing the JSON object to the JSON reader
+     *
      * @return an instance from {@link JSONReader}
      */
     private JSONReader readObject() {

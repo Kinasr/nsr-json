@@ -3,7 +3,7 @@ package exception;
 /**
  * NotAListException is an exception for objects that can not be parsed to a list
  */
-public class NotAListException extends RuntimeException{
+public class NotAListException extends RuntimeException {
 
     /**
      * Throw {@link NotAListException} without any attachments
@@ -13,6 +13,7 @@ public class NotAListException extends RuntimeException{
 
     /**
      * Throw {@link NotAListException} with custom message
+     *
      * @param message exception message
      */
     public NotAListException(String message) {
@@ -21,8 +22,9 @@ public class NotAListException extends RuntimeException{
 
     /**
      * Throw {@link NotAListException} with custom message and the cause
+     *
      * @param message exception message
-     * @param cause the cause of the exception
+     * @param cause   the cause of the exception
      */
     public NotAListException(String message, Throwable cause) {
         super(message, cause);
@@ -30,6 +32,7 @@ public class NotAListException extends RuntimeException{
 
     /**
      * Throw {@link NotAListException} with the cause
+     *
      * @param cause the cause of the exception
      */
     public NotAListException(Throwable cause) {

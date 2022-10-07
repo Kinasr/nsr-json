@@ -1,7 +1,6 @@
 package nsr_json;
 
 import exception.JSONFileException;
-import lombok.Getter;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
@@ -16,12 +15,11 @@ import static nsr_json.Helper.prepareFilePath;
 /**
  * Load and Parse JSON file
  */
-public class JSONFileLoader {
+class JSONFileLoader {
 
     // It has all loaded JSON files as relative file path as the key and instance of this class as the value
     private final static Map<String, JSONFileLoader> loadedJSONs;
     private final String filePath;
-    @Getter
     private final Object data;
 
     static {
@@ -35,10 +33,11 @@ public class JSONFileLoader {
 
     /**
      * Manage instance for {@link JSONFileLoader}
+     *
      * @param filePath JSON file path
      * @return an instance of {@link JSONFileLoader} if already loaded return it or create a new instance
      */
-    public static JSONFileLoader getInstance(String filePath) {
+    protected static JSONFileLoader getInstance(String filePath) {
         if (filePath == null || filePath.isEmpty())
             throw new JSONFileException("File path can't be null or empty");
 
@@ -53,16 +52,25 @@ public class JSONFileLoader {
     }
 
     /**
+     * A getter for the fetched data from the JSON file
+     *
+     * @return all data in the JSON file as {@link Object}
+     */
+    protected Object getData() {
+        return data;
+    }
+
+    /**
      * Clears all the loaded data from all files
      */
-    public static void clearAll() {
+    protected static void clearAll() {
         loadedJSONs.clear();
     }
 
     /**
      * Clears the current instance from the loaded files
      */
-    public void clear() {
+    protected void clear() {
         loadedJSONs.remove(filePath);
     }
 

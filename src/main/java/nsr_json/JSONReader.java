@@ -3,7 +3,6 @@ package nsr_json;
 import exception.InvalidCustomObjectException;
 import exception.InvalidKeyException;
 import exception.NotAMapException;
-import lombok.NonNull;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -33,6 +32,7 @@ public class JSONReader {
 
     /**
      * Creating an instance of {@link JSONReader} for JSON Objects
+     *
      * @param jsonObject JSON object
      */
     protected JSONReader(Object jsonObject) {
@@ -182,7 +182,7 @@ public class JSONReader {
      * @param timeZone   to override on the configured timezone or the default one, can be null
      * @return the wanted value as {@link Calendar}
      */
-    public Calendar getDate(@NonNull String key, String dateFormat, String timeZone) {
+    public Calendar getDate(String key, String dateFormat, String timeZone) {
         return parseStringToCalender(getString(key), dateFormat, timeZone);
     }
 
@@ -194,8 +194,8 @@ public class JSONReader {
      *
      * @param key   the path to the wanted data can be a single key or a series of keys
      * @param clazz the class that data wanted to be parsed for
+     * @param <T>   The class type
      * @return the wanted value as {@link T}
-     * @param <T> The class type
      */
     public <T> T getAs(String key, Class<T> clazz) {
         return parseObjectTo(get(key), clazz);
@@ -209,8 +209,8 @@ public class JSONReader {
      *
      * @param key     the path to the wanted data can be a single key or a series of keys
      * @param parsing a {@link Function} that will give you an object to parse it as you want
+     * @param <T>     The class type
      * @return will return what the parsing function returns
-     * @param <T> The class type
      */
     public <T> T getAs(String key, Function<Object, T> parsing) {
         return parsing.apply(get(key));
@@ -226,8 +226,8 @@ public class JSONReader {
      *
      * @param key   the path to the wanted data can be a single key or a series of keys
      * @param clazz the class that data wanted to be parsed for
+     * @param <T>   The class type
      * @return the wanted value as {@link List<T>}
-     * @param <T> The class type
      */
     public <T> List<T> getListAs(String key, Class<T> clazz) {
         if (key.equals("."))
@@ -246,8 +246,8 @@ public class JSONReader {
      *
      * @param key   the path to the wanted data can be a single key or a series of keys
      * @param clazz the class that data wanted to be parsed for
+     * @param <T>   The class type
      * @return the wanted value as {@link Map} of {@link String} and {@link T}
-     * @param <T> The class type
      */
     public <T> Map<String, T> getMapAs(String key, Class<T> clazz) {
         if (key.equals("."))
@@ -264,8 +264,8 @@ public class JSONReader {
      *
      * @param key   the path to the wanted data can be a single key or a series of keys
      * @param clazz the custom object class
+     * @param <T>   The class type
      * @return an instance form the custom object with the data if any field not existed in the JSON file will be null
-     * @param <T> The class type
      */
     public <T> T getCustomObject(String key, Class<T> clazz) {
         return getCustomObject(key, clazz, null);
@@ -286,8 +286,8 @@ public class JSONReader {
      * @param customFieldParsing     supporting custom parsing with field name as the key and the parser function as value
      * @param supportedCustomObjects supporting custom objects that may be used in the main custom object
      *                               if the main one used as a child object please send it again here
+     * @param <T>                    The class type
      * @return an instance form the custom object with the data if any field not existed in the JSON file will be null
-     * @param <T> The class type
      */
     public <T> T getCustomObject(String key,
                                  Class<T> clazz,
@@ -307,15 +307,15 @@ public class JSONReader {
      * <p>
      * to support custom objects in the custom object please pass them as a list of classes.
      *
-     * @param key the path to the wanted data can be a single key or a series of keys
-     * @param clazz the custom object class
-     * @param dateFormat optional date format if the custom object may have a {@link Calendar} field
-     * @param timezone optional timezone if the custom object may have a {@link Calendar} field
-     * @param customFieldParsing supporting custom parsing with field name as the key and the parser function as value
+     * @param key                    the path to the wanted data can be a single key or a series of keys
+     * @param clazz                  the custom object class
+     * @param dateFormat             optional date format if the custom object may have a {@link Calendar} field
+     * @param timezone               optional timezone if the custom object may have a {@link Calendar} field
+     * @param customFieldParsing     supporting custom parsing with field name as the key and the parser function as value
      * @param supportedCustomObjects supporting custom objects that may be used in the main custom object
      *                               if the main one used as a child object please send it again here
+     * @param <T>                    The class type
      * @return an instance form the custom object with the data if any field not existed in the JSON file will be null
-     * @param <T> The class type
      */
     public <T> T getCustomObject(String key,
                                  Class<T> clazz,

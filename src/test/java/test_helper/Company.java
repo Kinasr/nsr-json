@@ -1,9 +1,11 @@
 package test_helper;
 
 import lombok.Data;
+import lombok.experimental.Accessors;
 
 import java.time.LocalDateTime;
 
+@Accessors(chain = true)
 @Data
 public class Company {
     String name;

@@ -12,6 +12,7 @@ public class DateFormatException extends RuntimeException {
 
     /**
      * Throw {@link DateFormatException} with custom message
+     *
      * @param message exception message
      */
     public DateFormatException(String message) {
@@ -20,8 +21,9 @@ public class DateFormatException extends RuntimeException {
 
     /**
      * Throw {@link DateFormatException} with custom message and the cause
+     *
      * @param message exception message
-     * @param cause the cause of the exception
+     * @param cause   the cause of the exception
      */
     public DateFormatException(String message, Throwable cause) {
         super(message, cause);
@@ -29,6 +31,7 @@ public class DateFormatException extends RuntimeException {
 
     /**
      * Throw {@link DateFormatException} with the cause
+     *
      * @param cause the cause of the exception
      */
     public DateFormatException(Throwable cause) {
