@@ -97,7 +97,7 @@ public class JSONReader {
      */
     public String getString(String key) {
         var obj = changeVariablesIfExist(get(key));
-        return obj == null ? null : String.valueOf(obj);
+        return Parse.String.apply(obj);
     }
 
     /**
@@ -110,7 +110,7 @@ public class JSONReader {
      * @return the wanted value as {@link Integer}
      */
     public Integer getInteger(String key) {
-        return parseObjectTo(get(key), Integer.class);
+        return Parse.Integer.apply(get(key));
     }
 
     /**
@@ -123,8 +123,7 @@ public class JSONReader {
      * @return the wanted value as {@link Double}
      */
     public Double getDouble(String key) {
-        var num = getString(key);
-        return num == null ? null : Double.parseDouble(num);
+        return Parse.Double.apply(get(key));
     }
 
     /**
@@ -137,7 +136,7 @@ public class JSONReader {
      * @return the wanted value as {@link Long}
      */
     public Long getLong(String key) {
-        return parseObjectToLong(get(key));
+        return Parse.Long.apply(get(key));
     }
 
     /**
@@ -150,7 +149,7 @@ public class JSONReader {
      * @return the wanted value as {@link Boolean}
      */
     public Boolean getBoolean(String key) {
-        return parseObjectTo(get(key), Boolean.class);
+        return Parse.Boolean.apply(get(key));
     }
 
     /**
@@ -197,6 +196,7 @@ public class JSONReader {
      * @param <T>   The class type
      * @return the wanted value as {@link T}
      */
+    @Deprecated
     public <T> T getAs(String key, Class<T> clazz) {
         return parseObjectTo(get(key), clazz);
     }
@@ -229,11 +229,19 @@ public class JSONReader {
      * @param <T>   The class type
      * @return the wanted value as {@link List<T>}
      */
+    @Deprecated
     public <T> List<T> getListAs(String key, Class<T> clazz) {
         if (key.equals("."))
             return parseObjectToList(data, clazz);
 
         return parseObjectToList(get(key), clazz);
+    }
+
+    public <T> List<T> getListAs(String key, Function<Object, T> parsing) {
+        if (key.equals("."))
+            return parseObjectToList(data, parsing);
+
+        return parseObjectToList(get(key), parsing);
     }
 
     /**
@@ -249,11 +257,19 @@ public class JSONReader {
      * @param <T>   The class type
      * @return the wanted value as {@link Map} of {@link String} and {@link T}
      */
+    @Deprecated
     public <T> Map<String, T> getMapAs(String key, Class<T> clazz) {
         if (key.equals("."))
             return parseObjectToMap(data, clazz);
 
         return parseObjectToMap(get(key), clazz);
+    }
+
+    public <T> Map<String, T> getMapAs(String key, Function<Object, T> parsing) {
+        if (key.equals("."))
+            return parseObjectToMap(data, parsing);
+
+        return parseObjectToMap(get(key), parsing);
     }
 
     /**
@@ -378,7 +394,7 @@ public class JSONReader {
                         if (isList) {
                             var list = new ArrayList<>();
 
-                            var fetchedList = parseObjectToList(fetchedValue, Object.class);
+                            var fetchedList = parseObjectToList(fetchedValue, Parse.Object);
                             for (int i = 0; i < fetchedList.size(); i++) {
                                 list.add(
                                         getCustomObject(subKey + "[" + i + "]", customObject, customFieldParsing, supportedCustomObjects)
@@ -389,7 +405,7 @@ public class JSONReader {
                             var map = new HashMap<>();
 
                             var fetchedMap =
-                                    parseObjectToMap(fetchedValue, Object.class);
+                                    parseObjectToMap(fetchedValue, Parse.Object);
                             for (String mKey : fetchedMap.keySet()) {
                                 map.put(mKey, getCustomObject(subKey + "." + mKey, customObject, customFieldParsing, supportedCustomObjects));
                             }
@@ -449,7 +465,7 @@ public class JSONReader {
     }
 
     private Object getValueFromMap(Object obj, String key) {
-        var map = parseObjectToMap(obj, Object.class);
+        var map = parseObjectToMap(obj, Parse.Object);
 
         if (!map.containsKey(key)) {
             throw new InvalidKeyException("This key [" + key + "] does not exist in [" + obj + "]");
@@ -459,7 +475,7 @@ public class JSONReader {
     }
 
     private Object getValueFromList(Object obj, Integer index) {
-        var list = parseObjectToList(obj, Object.class);
+        var list = parseObjectToList(obj, Parse.Object);
 
         if (index >= list.size()) {
             throw new InvalidKeyException("This index [" + index + "] is out of the boundary of [" + obj + "]");
@@ -504,7 +520,7 @@ public class JSONReader {
 
         Map<String, Object> variables = null;
         try {
-            variables = getMapAs(jsonVarsKey, Object.class);
+            variables = getMapAs(jsonVarsKey, Parse.Object);
         } catch (InvalidKeyException | NotAMapException ignore) {
         }
 

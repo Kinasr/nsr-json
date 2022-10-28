@@ -103,10 +103,28 @@ class Helper {
      * @param <T>   the wanted type
      * @return the value as {@link List<T>}
      */
+    @Deprecated
     protected static <T> List<T> parseObjectToList(Object obj, Class<T> clazz) {
         if (obj instanceof List<?> list) {
             return list.stream()
                     .map(item -> parseObjectTo(item, clazz)).toList();
+        }
+
+        throw new NotAListException();
+    }
+
+    /**
+     * Used internally to parse {@link Object} to be a {@link List<T>}
+     *
+     * @param obj   the value wanted to be parsed
+     * @param parsing the parsing function
+     * @param <T>   the wanted type
+     * @return the value as {@link List<T>}
+     */
+    protected static <T> List<T> parseObjectToList(Object obj, Function<Object, T> parsing) {
+        if (obj instanceof List<?> list) {
+            return list.stream()
+                    .map(parsing).toList();
         }
 
         throw new NotAListException();
@@ -120,11 +138,32 @@ class Helper {
      * @param <T>   the wanted type
      * @return the value as {@link Map} of {@link String} and {@link T}
      */
+    @Deprecated
     protected static <T> Map<String, T> parseObjectToMap(Object obj, Class<T> clazz) {
         if (obj instanceof Map<?, ?> map) {
             var nMap = new HashMap<String, T>();
             map.forEach(
                     (k, v) -> nMap.put(k.toString(), parseObjectTo(v, clazz))
+            );
+            return nMap;
+        }
+
+        throw new NotAMapException();
+    }
+
+    /**
+     * Used internally to parse {@link Object} to be a {@link Map} of {@link String} and {@link T}
+     *
+     * @param obj   the value wanted to be parsed
+     * @param parsing the parsing function
+     * @param <T>   the wanted type
+     * @return the value as {@link Map} of {@link String} and {@link T}
+     */
+    protected static <T> Map<String, T> parseObjectToMap(Object obj, Function<Object, T> parsing) {
+        if (obj instanceof Map<?, ?> map) {
+            var nMap = new HashMap<String, T>();
+            map.forEach(
+                    (k, v) -> nMap.put(k.toString(), parsing.apply(v))
             );
             return nMap;
         }

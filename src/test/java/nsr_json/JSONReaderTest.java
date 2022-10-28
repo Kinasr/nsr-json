@@ -3,6 +3,7 @@ package nsr_json;
 import exception.DateFormatException;
 import exception.InvalidKeyException;
 import exception.NotAMapException;
+import exception.ParsingException;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.junit.jupiter.api.Nested;
@@ -495,7 +496,7 @@ class JSONReaderTest {
 
             assertThatThrownBy(
                     () -> new JSONReader(jsonLoader).getInteger("string")
-            ).isInstanceOf(ClassCastException.class);
+            ).isInstanceOf(ParsingException.class);
         }
 
         @Test
