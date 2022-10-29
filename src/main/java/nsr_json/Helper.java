@@ -103,7 +103,6 @@ class Helper {
      * @param <T>   the wanted type
      * @return the value as {@link List<T>}
      */
-    @Deprecated
     protected static <T> List<T> parseObjectToList(Object obj, Class<T> clazz) {
         if (obj instanceof List<?> list) {
             return list.stream()
@@ -138,7 +137,6 @@ class Helper {
      * @param <T>   the wanted type
      * @return the value as {@link Map} of {@link String} and {@link T}
      */
-    @Deprecated
     protected static <T> Map<String, T> parseObjectToMap(Object obj, Class<T> clazz) {
         if (obj instanceof Map<?, ?> map) {
             var nMap = new HashMap<String, T>();

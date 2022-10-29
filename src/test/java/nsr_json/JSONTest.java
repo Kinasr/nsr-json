@@ -96,7 +96,7 @@ class JSONTest {
 
         @Test
         void readIntegerAs() {
-            assertThat(json.read().getAs("person.age", Integer.class))
+            assertThat(json.read().getAs("person.age", Parse.Integer))
                     .isInstanceOf(Integer.class)
                     .isEqualTo(35);
         }

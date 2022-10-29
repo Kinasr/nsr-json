@@ -19,6 +19,7 @@ import static nsr_json.Helper.*;
 public class JSONReader {
     private final Object data;
     private final Map<String, Object> vars;
+    private final Boolean enableEnv;
 
     /**
      * Creating an instance of {@link JSONReader} for JSON files
@@ -28,6 +29,7 @@ public class JSONReader {
     protected JSONReader(JSONFileLoader loader) {
         this.data = loader.getData();
         this.vars = getJSONVariables();
+        this.enableEnv = true;
     }
 
     /**
@@ -38,11 +40,19 @@ public class JSONReader {
     protected JSONReader(Object jsonObject) {
         this.data = jsonObject;
         this.vars = getJSONVariables();
+        this.enableEnv = true;
     }
 
     private JSONReader(Object data, Map<String, Object> vars) {
         this.data = data;
         this.vars = vars;
+        this.enableEnv = true;
+    }
+
+    protected JSONReader(JSONFileLoader loader, Boolean enableEnv) {
+        this.data = loader.getData();
+        this.vars = getJSONVariables();
+        this.enableEnv = enableEnv;
     }
 
     /**
@@ -196,7 +206,6 @@ public class JSONReader {
      * @param <T>   The class type
      * @return the wanted value as {@link T}
      */
-    @Deprecated
     public <T> T getAs(String key, Class<T> clazz) {
         return parseObjectTo(get(key), clazz);
     }
@@ -229,7 +238,6 @@ public class JSONReader {
      * @param <T>   The class type
      * @return the wanted value as {@link List<T>}
      */
-    @Deprecated
     public <T> List<T> getListAs(String key, Class<T> clazz) {
         if (key.equals("."))
             return parseObjectToList(data, clazz);
@@ -257,7 +265,6 @@ public class JSONReader {
      * @param <T>   The class type
      * @return the wanted value as {@link Map} of {@link String} and {@link T}
      */
-    @Deprecated
     public <T> Map<String, T> getMapAs(String key, Class<T> clazz) {
         if (key.equals("."))
             return parseObjectToMap(data, clazz);

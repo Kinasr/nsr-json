@@ -444,6 +444,61 @@ class JSONReaderTest {
                     .isInstanceOf(Object.class)
                     .isEqualTo("I'm here");
         }
+
+        @Test
+        void getAsIntegerNull() {
+            var json = new JSONObject("""
+                    {
+                      "integer": null
+                    }
+                    """);
+            when(jsonLoader.getData()).thenReturn(json.toMap());
+
+
+            assertThat(new JSONReader(jsonLoader).getAs("integer", Parse.Integer))
+                    .isNull();
+        }
+
+        @Test
+        void getAsInteger() {
+            var json = new JSONObject("""
+                    {
+                      "integer": 10
+                    }
+                    """);
+            when(jsonLoader.getData()).thenReturn(json.toMap());
+
+            assertThat(new JSONReader(jsonLoader).getAs("integer", Parse.Integer))
+                    .isInstanceOf(Integer.class)
+                    .isEqualTo(10);
+        }
+
+        @Test
+        void getAsIntegerString() {
+            var json = new JSONObject("""
+                    {
+                      "integer": 10
+                    }
+                    """);
+            when(jsonLoader.getData()).thenReturn(json.toMap());
+
+            assertThat(new JSONReader(jsonLoader).getAs("integer", Parse.Integer))
+                    .isInstanceOf(Integer.class)
+                    .isEqualTo(10);
+        }
+
+        @Test
+        void getAsIntegerArray() {
+            var json = new JSONObject("""
+                    {
+                      "integer": []
+                    }
+                    """);
+            when(jsonLoader.getData()).thenReturn(json.toMap());
+
+            assertThatThrownBy(() -> new JSONReader(jsonLoader).getAs("integer", Parse.Integer))
+                    .isInstanceOf(ParsingException.class);
+        }
     }
 
     @Nested
