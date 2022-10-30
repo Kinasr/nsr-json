@@ -215,4 +215,36 @@ class Helper {
     protected static String prepareFilePath(String filePath) {
         return filePath.matches(".*.json$") ? filePath : filePath + ".json";
     }
+
+    protected static <T> Map<String, T> changeEnvironmentsKeys(Map<String, T> map) {
+        var environments = ConfigHandler.getInstance().getEnvironments();
+
+        if (environments.isEmpty() || map == null)
+            return map;
+
+        var keysWithEnv = map.keySet()
+                .stream()
+                .filter(k -> k.matches(".+@.+"))
+                .toList();
+
+        environments.get().forEach(
+                environment -> {
+                    keysWithEnv.forEach(
+                            key -> {
+                                var env = "@" + environment;
+                                if (key.endsWith(env)) {
+                                    var newKey = key.replace(env, "");
+                                    if (!map.containsKey(newKey)) {
+                                        var value = map.get(key);
+                                        map.remove(key);
+                                        map.put(newKey, value);
+                                    }
+                                }
+                            }
+                    );
+                }
+        );
+
+        return map;
+    }
 }

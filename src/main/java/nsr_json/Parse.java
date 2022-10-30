@@ -154,18 +154,8 @@ public class Parse {
             };
 
     public static Function<Object, String> String =
-            obj -> {
-                java.lang.String value;
+            obj -> obj != null ? java.lang.String.valueOf(obj) : null;
 
-                if (obj == null)
-                    value = null;
-                else if (obj instanceof String str)
-                    value = str;
-                else
-                    value = java.lang.String.valueOf(obj);
-
-                return value;
-            };
 
     public static Function<Object, Calendar> Calendar =
             obj -> {

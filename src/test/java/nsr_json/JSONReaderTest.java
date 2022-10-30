@@ -12,6 +12,9 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.mockito.Mock;
+import org.mockito.MockedStatic;
+import org.mockito.Mockito;
+import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import test_helper.Company;
 import test_helper.Person;
@@ -20,20 +23,20 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Calendar;
-import java.util.List;
-import java.util.Map;
-import java.util.TimeZone;
+import java.util.*;
 import java.util.function.Function;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class JSONReaderTest {
     @Mock
     JSONFileLoader jsonLoader;
+    @Mock
+    ConfigHandler configHandler;
 
     @Nested
     class ValidCases {
@@ -445,6 +448,7 @@ class JSONReaderTest {
                     .isEqualTo("I'm here");
         }
 
+        // region Parse
         @Test
         void getAsIntegerNull() {
             var json = new JSONObject("""
@@ -499,6 +503,7 @@ class JSONReaderTest {
             assertThatThrownBy(() -> new JSONReader(jsonLoader).getAs("integer", Parse.Integer))
                     .isInstanceOf(ParsingException.class);
         }
+        // endregion
     }
 
     @Nested
@@ -792,6 +797,88 @@ class JSONReaderTest {
                     () -> new JSONReader(jsonLoader).getInteger("person2.id")
             ).isInstanceOf(NotAMapException.class);
         }
+
+        // region Global Variables
+        @Test
+        void getValueWithGlobalVariable() {
+            var json = new JSONObject("""
+                    {
+                        "test-number": "${test}"
+                   }
+                    """);
+            when(jsonLoader.getData()).thenReturn(json.toMap());
+
+            MockedStatic<ConfigHandler> staticCH = Mockito.mockStatic(ConfigHandler.class);
+            staticCH.when(ConfigHandler::getInstance)
+                    .thenReturn(configHandler);
+
+            doReturn(Optional.of(Map.of("test", "001")))
+                    .when(configHandler).getGlobalVariables();
+
+            var testNumber = new JSONReader(jsonLoader).getString("test-number");
+            staticCH.close();
+
+            assertThat(testNumber)
+                    .isEqualTo("001");
+        }
+
+        @Test
+        void getValueWithLocalVariablesAndGlobalVariables() {
+            var json = new JSONObject("""
+                    {
+                        "variables": {
+                             "v1": "v1",
+                             "v2": "v2",
+                             "v3": "v3"
+                        },
+                       "string": "first var is ${v1}, second is ${v2}, third is ${v3}, fourth is ${v4}"
+                     }
+                    """);
+            when(jsonLoader.getData()).thenReturn(json.toMap());
+
+            MockedStatic<ConfigHandler> staticCH = Mockito.mockStatic(ConfigHandler.class);
+            staticCH.when(ConfigHandler::getInstance)
+                    .thenReturn(configHandler);
+
+            doReturn(Optional.of(Map.of("v4", "v4")))
+                    .when(configHandler).getGlobalVariables();
+
+            var str = new JSONReader(jsonLoader).getString("string");
+            staticCH.close();
+
+            assertThat(str)
+                    .isEqualTo("first var is v1, second is v2, third is v3, fourth is v4");
+        }
+
+        @Test
+        void getValueWithLocalVariablesContainsGlobalVariables() {
+            var json = new JSONObject("""
+                    {
+                        "variables": {
+                             "v1": "v1",
+                             "v2": "v2",
+                             "v3": "v3",
+                             "v4": "v4L"
+                        },
+                       "string": "first var is ${v1}, second is ${v2}, third is ${v3}, fourth is ${v4}"
+                     }
+                    """);
+            when(jsonLoader.getData()).thenReturn(json.toMap());
+
+            MockedStatic<ConfigHandler> staticCH = Mockito.mockStatic(ConfigHandler.class);
+            staticCH.when(ConfigHandler::getInstance)
+                    .thenReturn(configHandler);
+
+            doReturn(Optional.of(Map.of("v4", "v4")))
+                    .when(configHandler).getGlobalVariables();
+
+            var str = new JSONReader(jsonLoader).getString("string");
+            staticCH.close();
+
+            assertThat(str)
+                    .isEqualTo("first var is v1, second is v2, third is v3, fourth is v4L");
+        }
+        // endregion
     }
 
     @Nested

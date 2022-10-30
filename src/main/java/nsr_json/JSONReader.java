@@ -267,14 +267,18 @@ public class JSONReader {
      */
     public <T> Map<String, T> getMapAs(String key, Class<T> clazz) {
         if (key.equals("."))
-            return parseObjectToMap(data, clazz);
+            return changeEnvironmentsKeys(
+                    parseObjectToMap(data, clazz)
+            );
 
         return parseObjectToMap(get(key), clazz);
     }
 
     public <T> Map<String, T> getMapAs(String key, Function<Object, T> parsing) {
         if (key.equals("."))
-            return parseObjectToMap(data, parsing);
+            return changeEnvironmentsKeys(
+                    parseObjectToMap(data, parsing)
+            );
 
         return parseObjectToMap(get(key), parsing);
     }
@@ -472,7 +476,7 @@ public class JSONReader {
     }
 
     private Object getValueFromMap(Object obj, String key) {
-        var map = parseObjectToMap(obj, Parse.Object);
+        var map = changeEnvironmentsKeys(parseObjectToMap(obj, Parse.Object));
 
         if (!map.containsKey(key)) {
             throw new InvalidKeyException("This key [" + key + "] does not exist in [" + obj + "]");
@@ -492,12 +496,25 @@ public class JSONReader {
     }
 
     private Object changeVariablesIfExist(Object obj) {
-        if (vars == null) return obj;
+        var globalVariables = ConfigHandler.getInstance().getGlobalVariables();
+        var stringObj = Parse.String.apply(obj);
 
-        var stringObj = String.valueOf(obj);
+        if ((vars == null && globalVariables.isEmpty()) || !stringObj.matches(".*\\$\\{.+}.*"))
+            return obj;
 
-        for (String key : vars.keySet()) {
-            stringObj = stringObj.replaceAll("\\$\\{" + key + "}", String.valueOf(vars.get(key)));
+        if (vars != null) {
+            for (String key : vars.keySet()) {
+                stringObj = stringObj
+                        .replaceAll("\\$\\{" + key + "}", Parse.String.apply(vars.get(key)));
+            }
+        }
+
+        if (globalVariables.isPresent()) {
+            var gVars = globalVariables.get();
+            for (String key : gVars.keySet()) {
+                stringObj = stringObj
+                        .replaceAll("\\$\\{" + key + "}", Parse.String.apply(gVars.get(key)));
+            }
         }
 
         return stringObj;
@@ -531,6 +548,6 @@ public class JSONReader {
         } catch (InvalidKeyException | NotAMapException ignore) {
         }
 
-        return variables;
+        return changeEnvironmentsKeys(variables);
     }
 }

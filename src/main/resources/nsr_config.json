@@ -1,5 +1,7 @@
 {
-  "variables": {},
+  "variables": {
+    "Test": "001"
+  },
   "environments": [],
   "date-config": {
     "data-format": "",
