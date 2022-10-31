@@ -5,6 +5,7 @@ import exception.ParsingException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.TimeZone;
 import java.util.function.Function;
 
 import static nsr_json.Helper.DEFAULT_DATE_FORMAT;
@@ -159,10 +160,15 @@ public class Parse {
 
     public static Function<Object, Calendar> Calendar =
             obj -> {
-                var calendar = java.util.Calendar.getInstance();
+                var config = ConfigHandler.getInstance();
+                var configDateFormat = config.getDateFormat();
+                var configTimezone = config.getTimezone();
 
+                var calendar = configTimezone.isPresent() ?
+                        java.util.Calendar.getInstance(TimeZone.getTimeZone(configTimezone.get())) :
+                        java.util.Calendar.getInstance();
                 try {
-                    calendar.setTime(new SimpleDateFormat(DEFAULT_DATE_FORMAT)
+                    calendar.setTime(new SimpleDateFormat(configDateFormat.orElse(DEFAULT_DATE_FORMAT))
                             .parse(String.apply(obj)));
                 } catch (ParseException e) {
                     throw new ParsingException("Can't parse [" + obj + "] to be Calender");

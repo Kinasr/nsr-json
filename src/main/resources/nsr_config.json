@@ -2,9 +2,12 @@
   "variables": {
     "Test": "001"
   },
-  "environments": [],
+  "environments": [
+    "local",
+    "live"
+  ],
   "date-config": {
-    "data-format": "",
-    "timezone": ""
+    "data-format": "yyyy-MM-dd HH:mm:ss",
+    "timezone": "UTC"
   }
 }

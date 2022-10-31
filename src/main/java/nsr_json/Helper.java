@@ -14,7 +14,8 @@ import java.util.function.Predicate;
 import java.util.regex.Pattern;
 
 class Helper {
-    protected final static String KEY_CONTAINS_LIST_REGEX = "^[-a-zA-Z\\d_!@#$%^&*()+=|\\\\/?><\"'{}~]*(\\[\\d+])+$";
+//    protected final static String KEY_CONTAINS_LIST_REGEX = "^[-a-zA-Z\\d_!@#$%^&*()+=|\\\\/?><\"'{}~]*(\\[\\d+])+$";
+    protected final static String KEY_CONTAINS_LIST_REGEX = "^.*(\\[\\d+])+$";
     protected final static String NUMBER_IN_SQUARE_BRACKETS_REGEX = "\\[\\d+]";
     protected final static String SQUARE_BRACKETS_REGEX = "[\\[\\]]";
     protected final static String KEY_SEPARATOR_REGEX = "\\.";
@@ -115,9 +116,9 @@ class Helper {
     /**
      * Used internally to parse {@link Object} to be a {@link List<T>}
      *
-     * @param obj   the value wanted to be parsed
+     * @param obj     the value wanted to be parsed
      * @param parsing the parsing function
-     * @param <T>   the wanted type
+     * @param <T>     the wanted type
      * @return the value as {@link List<T>}
      */
     protected static <T> List<T> parseObjectToList(Object obj, Function<Object, T> parsing) {
@@ -152,9 +153,9 @@ class Helper {
     /**
      * Used internally to parse {@link Object} to be a {@link Map} of {@link String} and {@link T}
      *
-     * @param obj   the value wanted to be parsed
+     * @param obj     the value wanted to be parsed
      * @param parsing the parsing function
-     * @param <T>   the wanted type
+     * @param <T>     the wanted type
      * @return the value as {@link Map} of {@link String} and {@link T}
      */
     protected static <T> Map<String, T> parseObjectToMap(Object obj, Function<Object, T> parsing) {
@@ -178,14 +179,13 @@ class Helper {
      * @return date as {@link Calendar}
      */
     protected static Calendar parseStringToCalender(String stringDate, String dateFormat, String timeZone) {
-        var calendar = (timeZone == null || timeZone.isEmpty()) ?
-                Calendar.getInstance() :
-                Calendar.getInstance(TimeZone.getTimeZone(timeZone));
+        if (dateFormat == null || dateFormat.isBlank() || timeZone == null || timeZone.isBlank())
+            throw new IllegalArgumentException("DataFormat and TimeZone Can't be null or blank");
+
+        var calendar = Calendar.getInstance(TimeZone.getTimeZone(timeZone));
 
         try {
-            calendar.setTime(new SimpleDateFormat(
-                    (dateFormat == null || dateFormat.isEmpty()) ? DEFAULT_DATE_FORMAT : dateFormat
-            )
+            calendar.setTime(new SimpleDateFormat(dateFormat)
                     .parse(stringDate));
         } catch (ParseException e) {
             throw new DateFormatException(e);
@@ -228,21 +228,19 @@ class Helper {
                 .toList();
 
         environments.get().forEach(
-                environment -> {
-                    keysWithEnv.forEach(
-                            key -> {
-                                var env = "@" + environment;
-                                if (key.endsWith(env)) {
-                                    var newKey = key.replace(env, "");
-                                    if (!map.containsKey(newKey)) {
-                                        var value = map.get(key);
-                                        map.remove(key);
-                                        map.put(newKey, value);
-                                    }
+                environment -> keysWithEnv.forEach(
+                        key -> {
+                            var env = "@" + environment;
+                            if (key.endsWith(env)) {
+                                var newKey = key.replace(env, "");
+                                if (!map.containsKey(newKey)) {
+                                    var value = map.get(key);
+                                    map.remove(key);
+                                    map.put(newKey, value);
                                 }
                             }
-                    );
-                }
+                        }
+                )
         );
 
         return map;

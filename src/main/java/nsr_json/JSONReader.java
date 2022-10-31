@@ -175,7 +175,7 @@ public class JSONReader {
      * @return the wanted value as {@link Calendar}
      */
     public Calendar getDate(String key) {
-        return getDate(key, null, null);
+        return Parse.Calendar.apply(get(key));
     }
 
     /**
