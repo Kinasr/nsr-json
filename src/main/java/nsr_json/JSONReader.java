@@ -12,6 +12,7 @@ import java.util.function.Function;
 import java.util.regex.Pattern;
 
 import static nsr_json.Helper.*;
+import static nsr_json.Helper.changeEnvironmentsKeys;
 
 /**
  * A class helps to read data from a JSON file or JSON object
@@ -27,9 +28,9 @@ public class JSONReader {
      * @param loader an instance of {@link JSONReader} class
      */
     protected JSONReader(JSONFileLoader loader) {
+        this.enableEnv = true;
         this.data = loader.getData();
         this.vars = getJSONVariables();
-        this.enableEnv = true;
     }
 
     /**
@@ -38,21 +39,21 @@ public class JSONReader {
      * @param jsonObject JSON object
      */
     protected JSONReader(Object jsonObject) {
+        this.enableEnv = true;
         this.data = jsonObject;
         this.vars = getJSONVariables();
-        this.enableEnv = true;
     }
 
     private JSONReader(Object data, Map<String, Object> vars) {
+        this.enableEnv = true;
         this.data = data;
         this.vars = vars;
-        this.enableEnv = true;
     }
 
     protected JSONReader(JSONFileLoader loader, Boolean enableEnv) {
+        this.enableEnv = enableEnv;
         this.data = loader.getData();
         this.vars = getJSONVariables();
-        this.enableEnv = enableEnv;
     }
 
     /**
@@ -267,7 +268,7 @@ public class JSONReader {
      */
     public <T> Map<String, T> getMapAs(String key, Class<T> clazz) {
         if (key.equals("."))
-            return changeEnvironmentsKeys(
+            return changeEnvIfEnabled(
                     parseObjectToMap(data, clazz)
             );
 
@@ -276,7 +277,7 @@ public class JSONReader {
 
     public <T> Map<String, T> getMapAs(String key, Function<Object, T> parsing) {
         if (key.equals("."))
-            return changeEnvironmentsKeys(
+            return changeEnvIfEnabled(
                     parseObjectToMap(data, parsing)
             );
 
@@ -476,7 +477,7 @@ public class JSONReader {
     }
 
     private Object getValueFromMap(Object obj, String key) {
-        var map = changeEnvironmentsKeys(parseObjectToMap(obj, Parse.Object));
+        var map = changeEnvIfEnabled(parseObjectToMap(obj, Parse.Object));
 
         if (!map.containsKey(key)) {
             throw new InvalidKeyException("This key [" + key + "] does not exist in [" + obj + "]");
@@ -548,6 +549,10 @@ public class JSONReader {
         } catch (InvalidKeyException | NotAMapException ignore) {
         }
 
-        return changeEnvironmentsKeys(variables);
+        return changeEnvIfEnabled(variables);
+    }
+
+    private <T> Map<String, T> changeEnvIfEnabled(Map<String, T> map) {
+        return this.enableEnv ? changeEnvironmentsKeys(map) : map;
     }
 }

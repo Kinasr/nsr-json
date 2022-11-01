@@ -14,7 +14,6 @@ import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.mockito.Mock;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
-import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import test_helper.Company;
 import test_helper.Person;
@@ -294,7 +293,7 @@ class JSONReaderTest {
         }
 
         @Test
-        void getValidDateUsingConfiguredConfig() throws ParseException {
+        void getValidDateUsingDefaultConfig() throws ParseException {
             var json = new JSONObject("""
                     {
                       "date": "2022-08-10 10:30:00"
@@ -307,7 +306,7 @@ class JSONReaderTest {
             var expectedDate = Calendar.getInstance();
             expectedDate.setTime(new SimpleDateFormat(dateFormat).parse("2022-08-10 10:30:00"));
 
-            assertThat(new JSONReader(jsonLoader).getDate("date"))
+            assertThat(new JSONReader(jsonLoader).getDate("date", null, null))
                     .isInstanceOf(Calendar.class)
                     .isEqualTo(expectedDate);
         }
@@ -802,10 +801,10 @@ class JSONReaderTest {
         @Test
         void getValueWithGlobalVariable() {
             var json = new JSONObject("""
-                    {
-                        "test-number": "${test}"
-                   }
-                    """);
+                     {
+                         "test-number": "${test}"
+                    }
+                     """);
             when(jsonLoader.getData()).thenReturn(json.toMap());
 
             MockedStatic<ConfigHandler> staticCH = Mockito.mockStatic(ConfigHandler.class);

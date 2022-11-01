@@ -76,7 +76,7 @@ class JSONTest {
             expectedDate.setTime(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
                     .parse("2020-06-23 10:25:55"));
 
-            assertThat(json.read().getDate("person.marriageDate"))
+            assertThat(json.read().getDate("person.marriageDate", null, null))
                     .isInstanceOf(Calendar.class)
                     .isEqualTo(expectedDate);
         }

@@ -179,13 +179,16 @@ class Helper {
      * @return date as {@link Calendar}
      */
     protected static Calendar parseStringToCalender(String stringDate, String dateFormat, String timeZone) {
-        if (dateFormat == null || dateFormat.isBlank() || timeZone == null || timeZone.isBlank())
-            throw new IllegalArgumentException("DataFormat and TimeZone Can't be null or blank");
 
-        var calendar = Calendar.getInstance(TimeZone.getTimeZone(timeZone));
+        var calendar = (timeZone == null || timeZone.isBlank()) ?
+                Calendar.getInstance() :
+                Calendar.getInstance(TimeZone.getTimeZone(timeZone));
 
         try {
-            calendar.setTime(new SimpleDateFormat(dateFormat)
+            calendar.setTime(new SimpleDateFormat(
+                    (dateFormat == null || dateFormat.isBlank()) ?
+                            DEFAULT_DATE_FORMAT : dateFormat
+            )
                     .parse(stringDate));
         } catch (ParseException e) {
             throw new DateFormatException(e);
