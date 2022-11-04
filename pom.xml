@@ -4,7 +4,7 @@
 
     <groupId>io.github.kinasr</groupId>
     <artifactId>nsr-json</artifactId>
-    <version>1.0.1</version>
+    <version>1.1.2</version>
     <name>NSR-JSON</name>
     <description>A library provides easy and customizable ways to read data from JSON files or
         Objects has JSON format.

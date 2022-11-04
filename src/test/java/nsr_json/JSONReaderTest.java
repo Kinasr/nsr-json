@@ -828,6 +828,21 @@ class JSONReaderTest {
             ).isInstanceOf(NotAMapException.class);
         }
 
+        @Test
+        void getIntegerVariable() {
+            var json = new JSONObject("""
+                    {
+                        "variables": {
+                             "number": 50
+                        },
+                       "number": "${number}"
+                     }
+                    """);
+            when(jsonLoader.getData()).thenReturn(json.toMap());
+            assertThat(new JSONReader(jsonLoader).getInteger("number"))
+                    .isEqualTo(50);
+        }
+
         // region Global Variables
         @Test
         void getValueWithGlobalVariable() {
