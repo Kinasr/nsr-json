@@ -6,11 +6,6 @@ import exception.JSONFileException;
  * Provide ways to manage JSON files or JSON objects
  */
 public class JSON {
-    /**
-     * Default key to support variables
-     */
-    public static String DEFAULT_VARIABLES_KEY = "variables";
-
     private String filePath;
     private Object jsonObject;
     private JSONFileLoader jsonFileLoader;

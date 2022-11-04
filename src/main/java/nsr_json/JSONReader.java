@@ -541,11 +541,9 @@ public class JSONReader {
     }
 
     private Map<String, Object> getJSONVariables() {
-        var jsonVarsKey = JSON.DEFAULT_VARIABLES_KEY;
-
         Map<String, Object> variables = null;
         try {
-            variables = getMapAs(jsonVarsKey, Parse.Object);
+            variables = getMapAs("variables", Parse.Object);
         } catch (InvalidKeyException | NotAMapException ignore) {
         }
 

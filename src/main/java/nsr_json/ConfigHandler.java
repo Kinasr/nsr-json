@@ -3,7 +3,6 @@ package nsr_json;
 import exception.InvalidKeyException;
 import exception.JSONFileException;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -23,7 +22,7 @@ public class ConfigHandler {
         try {
             r = new JSONReader(JSONFileLoader.getInstance("src/main/resources/nsr_config.json"), false);
         } catch (JSONFileException ignore) {
-            try{
+            try {
                 r = new JSONReader(JSONFileLoader
                         .getInstance("src/main/resources/config.json"), false);
             } catch (JSONFileException ignored) {
@@ -58,31 +57,21 @@ public class ConfigHandler {
     }
 
     private <T> Optional<T> fetchData(KeyFetch<T> keyFetch, Supplier<T> read) {
-        T value;
-
-        if (reader == null || (keyFetch.isFetched && !keyFetch.isExist))
-            value = null;
-        else if (!keyFetch.isFetched)
+        if (reader != null && !keyFetch.isFetched)
             try {
-                value = read.get();
-                keyFetch.isExist = true;
+                keyFetch.value = read.get();
             } catch (InvalidKeyException ignore) {
-                value = null;
-            }
-            finally {
+            } finally {
                 keyFetch.isFetched = true;
             }
-        else
-            value = keyFetch.value;
 
-        return Optional.ofNullable(value);
+        return Optional.ofNullable(keyFetch.value);
     }
 
 
-    static class KeyFetch<T>{
+    static class KeyFetch<T> {
         private final String key;
-        private Boolean isFetched =  false;
-        private Boolean isExist = false;
+        private Boolean isFetched = false;
         private T value;
 
         private KeyFetch(String key) {

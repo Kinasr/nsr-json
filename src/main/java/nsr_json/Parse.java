@@ -12,10 +12,10 @@ import static nsr_json.Helper.DEFAULT_DATE_FORMAT;
 
 public class Parse {
 
-    public static Function<Object, Object> Object =
+    public static final Function<Object, Object> Object =
             obj -> obj;
 
-    public static Function<Object, Boolean> Boolean =
+    public static final Function<Object, Boolean> Boolean =
             obj -> {
                 java.lang.Boolean value;
 
@@ -71,7 +71,7 @@ public class Parse {
                 return value;
             };
 
-    public static Function<Object, Integer> Integer =
+    public static final Function<Object, Integer> Integer =
             obj -> {
                 java.lang.Integer value;
 
@@ -91,7 +91,7 @@ public class Parse {
                 return value;
             };
 
-    public static Function<Object, Long> Long =
+    public static final Function<Object, Long> Long =
             obj -> {
                 java.lang.Long value;
 
@@ -134,7 +134,7 @@ public class Parse {
                 return value;
             };
 
-    public static Function<Object, Double> Double =
+    public static final Function<Object, Double> Double =
             obj -> {
                 java.lang.Double value;
 
@@ -154,11 +154,11 @@ public class Parse {
                 return value;
             };
 
-    public static Function<Object, String> String =
+    public static final Function<Object, String> String =
             obj -> obj != null ? java.lang.String.valueOf(obj) : null;
 
 
-    public static Function<Object, Calendar> Calendar =
+    public static final Function<Object, Calendar> Calendar =
             obj -> {
                 var config = ConfigHandler.getInstance();
                 var configDateFormat = config.getDateFormat();
