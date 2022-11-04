@@ -12,7 +12,6 @@ import java.util.function.Function;
 import java.util.regex.Pattern;
 
 import static nsr_json.Helper.*;
-import static nsr_json.Helper.changeEnvironmentsKeys;
 
 /**
  * A class helps to read data from a JSON file or JSON object
@@ -330,6 +329,7 @@ public class JSONReader {
      * <p>
      * Please note: the custom object must have a constructor without any arguments.
      * The keys in the JSON file must be the same as the custom object fields name.
+     * To read the all data as a Custom object send key to be "."
      * <p>
      * to support custom parsing please send the field name as the key of the map and the value should be the parsing function.
      * <p>
@@ -367,7 +367,7 @@ public class JSONReader {
             Object fieldValue = null;
             var fieldName = field.getName();
             var fieldType = field.getType();
-            var subKey = key + "." + fieldName;
+            var subKey = key.equals(".") ? fieldName : key + "." + fieldName;
 
             field.setAccessible(true);
 

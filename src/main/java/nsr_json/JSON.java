@@ -15,6 +15,20 @@ public class JSON {
     private Object jsonObject;
     private JSONFileLoader jsonFileLoader;
 
+    public static JSONReader readFile(String filePath) {
+        if (filePath == null || filePath.isEmpty() || filePath.isBlank())
+            throw new JSONFileException("File path can't be null or empty");
+
+        return new JSONReader(JSONFileLoader.getInstance(filePath));
+    }
+
+    public static JSONReader readObject(Object jsonObject) {
+        if (jsonObject == null)
+            throw new IllegalArgumentException("Json Object can't be null");
+
+        return new JSONReader(jsonObject);
+    }
+
     /**
      * Create an instance from {@link JSON} class to manage a JSON file
      *

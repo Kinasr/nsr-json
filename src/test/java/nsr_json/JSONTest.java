@@ -36,6 +36,13 @@ class JSONTest {
         }
 
         @Test
+        void readFileUsingStaticMethod() {
+            assertThat(JSON.readFile("src/test/resources/json_test.json").get("person.name"))
+                    .isInstanceOf(Object.class)
+                    .isEqualTo("Ahmed");
+        }
+
+        @Test
         void readString() {
             assertThat(json.read().getString("person.name"))
                     .isInstanceOf(String.class)

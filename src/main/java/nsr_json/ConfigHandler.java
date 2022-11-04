@@ -23,7 +23,12 @@ public class ConfigHandler {
         try {
             r = new JSONReader(JSONFileLoader.getInstance("src/main/resources/nsr_config.json"), false);
         } catch (JSONFileException ignore) {
-            r = null;
+            try{
+                r = new JSONReader(JSONFileLoader
+                        .getInstance("src/main/resources/config.json"), false);
+            } catch (JSONFileException ignored) {
+                r = null;
+            }
         }
 
         this.reader = r;
