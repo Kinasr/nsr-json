@@ -84,16 +84,7 @@ public class JSONReader {
      * @return the wanted value as {@link Object}
      */
     public Object get(String key) {
-        if (key == null || key.isEmpty()) {
-            throw new InvalidKeyException();
-        }
-
-        var keys = splitKey.apply(key);
-
-        if (keys.size() > 1 || keyHasList.test(key))
-            return getValueFromKeys(data, keys);
-
-        return getValueFromMap(data, key);
+        return changeVariablesIfExist(getWithoutChangeVariables(key));
     }
 
     /**
@@ -106,8 +97,7 @@ public class JSONReader {
      * @return the wanted value as {@link String} even if it's not String it will parse it.
      */
     public String getString(String key) {
-        var obj = changeVariablesIfExist(get(key));
-        return Parse.String.apply(obj);
+        return Parse.String.apply(get(key));
     }
 
     /**
@@ -306,7 +296,7 @@ public class JSONReader {
                     parseObjectToMap(data, parsing)
             );
 
-        return parseObjectToMap(get(key), parsing);
+        return parseObjectToMap(getWithoutChangeVariables(key), parsing);
     }
 
     /**
@@ -470,6 +460,22 @@ public class JSONReader {
         return obj;
     }
 
+    private Object getWithoutChangeVariables(String key) {
+        Object obj;
+        if (key == null || key.isEmpty()) {
+            throw new InvalidKeyException();
+        }
+
+        var keys = splitKey.apply(key);
+
+        if (keys.size() > 1 || keyHasList.test(key))
+            obj = getValueFromKeys(data, keys);
+        else
+            obj = getValueFromMap(data, key);
+
+        return obj;
+    }
+
     private Object getValueFromKeys(Object data, List<String> keys) {
         Object obj = data;
 
@@ -526,7 +532,8 @@ public class JSONReader {
         var globalVariables = ConfigHandler.getInstance().getGlobalVariables();
         var stringObj = Parse.String.apply(obj);
 
-        if ((vars == null && globalVariables.isEmpty()) || !stringObj.matches(".*\\$\\{.+}.*"))
+        if (stringObj == null || (vars == null && globalVariables.isEmpty())
+                || !stringObj.matches(".*\\$\\{.+}.*"))
             return obj;
 
         if (vars != null) {
