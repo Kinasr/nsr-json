@@ -245,6 +245,19 @@ public class JSONReader {
         return parseObjectToList(get(key), clazz);
     }
 
+    /**
+     * Fetch a single piece of data from the YAML file using a single key or a series of keys
+     * <p>
+     * to support key series use a dot to separate keys "key1.key2"
+     * to support list in the key series "key[index]"
+     * <p>
+     * to return all data as {@link List} send "." as a key
+     *
+     * @param key     the path to the wanted data can be a single key or a series of keys
+     * @param parsing a {@link Function} take an object and return the wanted type of the List values
+     * @param <T>     The class type
+     * @return the wanted value as {@link List<T>}
+     */
     public <T> List<T> getListAs(String key, Function<Object, T> parsing) {
         if (key.equals("."))
             return parseObjectToList(data, parsing);
@@ -274,6 +287,19 @@ public class JSONReader {
         return parseObjectToMap(get(key), clazz);
     }
 
+    /**
+     * Fetch a single piece of data from the YAML file using a single key or a series of keys
+     * <p>
+     * to support key series use a dot to separate keys "key1.key2"
+     * to support list in the key series "key[index]"
+     * <p>
+     * to return all data as a {@link Map} send "." as a key
+     *
+     * @param key     the path to the wanted data can be a single key or a series of keys
+     * @param parsing a {@link Function} take an object and return the wanted type of the map values
+     * @param <T>     The class type
+     * @return the wanted value as {@link Map} of {@link String} and {@link T}
+     */
     public <T> Map<String, T> getMapAs(String key, Function<Object, T> parsing) {
         if (key.equals("."))
             return changeEnvIfEnabled(

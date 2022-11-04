@@ -219,6 +219,13 @@ class Helper {
         return filePath.matches(".*.json$") ? filePath : filePath + ".json";
     }
 
+    /**
+     * Changing the environments in the given map.
+     * It receives a list of environments and changing them by the order
+     * @param map the map wanted to change environments in
+     * @return the same map that received but with changing the environments
+     * @param <T> generic type
+     */
     protected static <T> Map<String, T> changeEnvironmentsKeys(Map<String, T> map) {
         var environments = ConfigHandler.getInstance().getEnvironments();
 

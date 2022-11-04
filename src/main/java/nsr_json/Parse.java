@@ -12,9 +12,15 @@ import static nsr_json.Helper.DEFAULT_DATE_FORMAT;
 
 public class Parse {
 
+    /**
+     * Parsing {@link Object} to {@link Object}
+     */
     public static final Function<Object, Object> Object =
             obj -> obj;
 
+    /**
+     * Parsing {@link Object} to {@link Boolean}
+     */
     public static final Function<Object, Boolean> Boolean =
             obj -> {
                 java.lang.Boolean value;
@@ -31,6 +37,9 @@ public class Parse {
                 return value;
             };
 
+    /**
+     * Parsing {@link Object} to {@link Byte}
+     */
     public static Function<Object, Byte> Byte =
             obj -> {
                 java.lang.Byte value;
@@ -51,6 +60,9 @@ public class Parse {
                 return value;
             };
 
+    /**
+     * Parsing {@link Object} to {@link Short}
+     */
     public static Function<Object, Short> Short =
             obj -> {
                 java.lang.Short value;
@@ -71,6 +83,9 @@ public class Parse {
                 return value;
             };
 
+    /**
+     * Parsing {@link Object} to {@link Integer}
+     */
     public static final Function<Object, Integer> Integer =
             obj -> {
                 java.lang.Integer value;
@@ -91,6 +106,9 @@ public class Parse {
                 return value;
             };
 
+    /**
+     * Parsing {@link Object} to {@link Long}
+     */
     public static final Function<Object, Long> Long =
             obj -> {
                 java.lang.Long value;
@@ -114,6 +132,9 @@ public class Parse {
                 return value;
             };
 
+    /**
+     * Parsing {@link Object} to {@link Float}
+     */
     public static Function<Object, Float> Float =
             obj -> {
                 java.lang.Float value;
@@ -134,6 +155,9 @@ public class Parse {
                 return value;
             };
 
+    /**
+     * Parsing {@link Object} to {@link Double}
+     */
     public static final Function<Object, Double> Double =
             obj -> {
                 java.lang.Double value;
@@ -154,10 +178,15 @@ public class Parse {
                 return value;
             };
 
+    /**
+     * Parsing {@link Object} to {@link String}
+     */
     public static final Function<Object, String> String =
             obj -> obj != null ? java.lang.String.valueOf(obj) : null;
 
-
+    /**
+     * Parsing {@link Object} to {@link Calendar}
+     */
     public static final Function<Object, Calendar> Calendar =
             obj -> {
                 var config = ConfigHandler.getInstance();

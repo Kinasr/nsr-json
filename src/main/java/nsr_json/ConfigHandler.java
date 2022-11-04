@@ -17,7 +17,7 @@ public class ConfigHandler {
     private final KeyFetch<String> dateFormat = new KeyFetch<>("date-config.data-format");
     private final KeyFetch<String> timezone = new KeyFetch<>("date-config.timezone");
 
-    public ConfigHandler() {
+    protected ConfigHandler() {
         JSONReader r;
         try {
             r = new JSONReader(JSONFileLoader.getInstance("src/main/resources/nsr_config.json"), false);
@@ -33,26 +33,26 @@ public class ConfigHandler {
         this.reader = r;
     }
 
-    public static ConfigHandler getInstance() {
+    protected static ConfigHandler getInstance() {
         if (instance == null)
             instance = new ConfigHandler();
 
         return instance;
     }
 
-    public Optional<List<String>> getEnvironments() {
+    protected Optional<List<String>> getEnvironments() {
         return fetchData(env, () -> reader.getListAs(env.key, Parse.String));
     }
 
-    public Optional<Map<String, Object>> getGlobalVariables() {
+    protected Optional<Map<String, Object>> getGlobalVariables() {
         return fetchData(vars, () -> reader.getMapAs(vars.key, Parse.Object));
     }
 
-    public Optional<String> getDateFormat() {
+    protected Optional<String> getDateFormat() {
         return fetchData(dateFormat, () -> reader.getString(dateFormat.key));
     }
 
-    public Optional<String> getTimezone() {
+    protected Optional<String> getTimezone() {
         return fetchData(timezone, () -> reader.getString(timezone.key));
     }
 

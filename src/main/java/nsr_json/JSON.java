@@ -10,6 +10,11 @@ public class JSON {
     private Object jsonObject;
     private JSONFileLoader jsonFileLoader;
 
+    /**
+     * To read data from JSON File
+     * @param filePath the relative path of the file
+     * @return an instance from {@link JSONReader}
+     */
     public static JSONReader readFile(String filePath) {
         if (filePath == null || filePath.isEmpty() || filePath.isBlank())
             throw new JSONFileException("File path can't be null or empty");
@@ -17,6 +22,12 @@ public class JSON {
         return new JSONReader(JSONFileLoader.getInstance(filePath));
     }
 
+    /**
+     * To read data from JSON Object
+     * It should be parsable to Map
+     * @param jsonObject the JSON object
+     * @return an instance from {@link JSONReader}
+     */
     public static JSONReader readObject(Object jsonObject) {
         if (jsonObject == null)
             throw new IllegalArgumentException("Json Object can't be null");
