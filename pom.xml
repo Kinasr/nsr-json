@@ -31,7 +31,7 @@
         <connection>scm:git:git://github.com/Kinasr/nsr-json.git</connection>
         <developerConnection>scm:git:ssh://github.com/Kinasr/nsr-json.git</developerConnection>
         <url>https://github.com/Kinasr/nsr-json/tree/main</url>
-    <tag>nsr-json-1.0.1</tag>
+    <tag>nsr-json-1.1.2</tag>
   </scm>
 
     <properties>
