@@ -76,3 +76,24 @@ var obj = json.getCustomObject("key", Person.class);
 String str = json.getString("string");
 // expected output: first var is v1, second is v2, then third is v3
 ```
+---
+## Configuration
+Optional we can add a JSON file with *nsr_config* or *config* name under `src/main/resources/`
+```json
+{
+  "variables": {
+    "test-number": "001"
+  },
+  "environments": [
+    "local",
+    "live"
+  ],
+  "date-config": {
+    "data-format": "yyyy-MM-dd HH:mm:ss",
+    "timezone": "UTC"
+  }
+}
+```
+* Support global variables *Note: local variables has higher property*
+* Support environments list by adding `key@environment`
+* Support date configuration for `getDate` method
