@@ -36,6 +36,13 @@ class JSONTest {
         }
 
         @Test
+        void readFileUsingStaticMethod() {
+            assertThat(JSON.readFile("src/test/resources/json_test.json").get("person.name"))
+                    .isInstanceOf(Object.class)
+                    .isEqualTo("Ahmed");
+        }
+
+        @Test
         void readString() {
             assertThat(json.read().getString("person.name"))
                     .isInstanceOf(String.class)
@@ -76,7 +83,7 @@ class JSONTest {
             expectedDate.setTime(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
                     .parse("2020-06-23 10:25:55"));
 
-            assertThat(json.read().getDate("person.marriageDate"))
+            assertThat(json.read().getDate("person.marriageDate", null, null))
                     .isInstanceOf(Calendar.class)
                     .isEqualTo(expectedDate);
         }
@@ -96,7 +103,7 @@ class JSONTest {
 
         @Test
         void readIntegerAs() {
-            assertThat(json.read().getAs("person.age", Integer.class))
+            assertThat(json.read().getAs("person.age", Parse.Integer))
                     .isInstanceOf(Integer.class)
                     .isEqualTo(35);
         }

@@ -19,6 +19,7 @@ import static nsr_json.Helper.*;
 public class JSONReader {
     private final Object data;
     private final Map<String, Object> vars;
+    private final Boolean enableEnv;
 
     /**
      * Creating an instance of {@link JSONReader} for JSON files
@@ -26,6 +27,7 @@ public class JSONReader {
      * @param loader an instance of {@link JSONReader} class
      */
     protected JSONReader(JSONFileLoader loader) {
+        this.enableEnv = true;
         this.data = loader.getData();
         this.vars = getJSONVariables();
     }
@@ -36,13 +38,21 @@ public class JSONReader {
      * @param jsonObject JSON object
      */
     protected JSONReader(Object jsonObject) {
+        this.enableEnv = true;
         this.data = jsonObject;
         this.vars = getJSONVariables();
     }
 
     private JSONReader(Object data, Map<String, Object> vars) {
+        this.enableEnv = true;
         this.data = data;
         this.vars = vars;
+    }
+
+    protected JSONReader(JSONFileLoader loader, Boolean enableEnv) {
+        this.enableEnv = enableEnv;
+        this.data = loader.getData();
+        this.vars = getJSONVariables();
     }
 
     /**
@@ -97,7 +107,7 @@ public class JSONReader {
      */
     public String getString(String key) {
         var obj = changeVariablesIfExist(get(key));
-        return obj == null ? null : String.valueOf(obj);
+        return Parse.String.apply(obj);
     }
 
     /**
@@ -110,7 +120,7 @@ public class JSONReader {
      * @return the wanted value as {@link Integer}
      */
     public Integer getInteger(String key) {
-        return parseObjectTo(get(key), Integer.class);
+        return Parse.Integer.apply(get(key));
     }
 
     /**
@@ -123,8 +133,7 @@ public class JSONReader {
      * @return the wanted value as {@link Double}
      */
     public Double getDouble(String key) {
-        var num = getString(key);
-        return num == null ? null : Double.parseDouble(num);
+        return Parse.Double.apply(get(key));
     }
 
     /**
@@ -137,7 +146,7 @@ public class JSONReader {
      * @return the wanted value as {@link Long}
      */
     public Long getLong(String key) {
-        return parseObjectToLong(get(key));
+        return Parse.Long.apply(get(key));
     }
 
     /**
@@ -150,7 +159,7 @@ public class JSONReader {
      * @return the wanted value as {@link Boolean}
      */
     public Boolean getBoolean(String key) {
-        return parseObjectTo(get(key), Boolean.class);
+        return Parse.Boolean.apply(get(key));
     }
 
     /**
@@ -166,7 +175,7 @@ public class JSONReader {
      * @return the wanted value as {@link Calendar}
      */
     public Calendar getDate(String key) {
-        return getDate(key, null, null);
+        return Parse.Calendar.apply(get(key));
     }
 
     /**
@@ -242,6 +251,26 @@ public class JSONReader {
      * to support key series use a dot to separate keys "key1.key2"
      * to support list in the key series "key[index]"
      * <p>
+     * to return all data as {@link List} send "." as a key
+     *
+     * @param key     the path to the wanted data can be a single key or a series of keys
+     * @param parsing a {@link Function} take an object and return the wanted type of the List values
+     * @param <T>     The class type
+     * @return the wanted value as {@link List<T>}
+     */
+    public <T> List<T> getListAs(String key, Function<Object, T> parsing) {
+        if (key.equals("."))
+            return parseObjectToList(data, parsing);
+
+        return parseObjectToList(get(key), parsing);
+    }
+
+    /**
+     * Fetch a single piece of data from the YAML file using a single key or a series of keys
+     * <p>
+     * to support key series use a dot to separate keys "key1.key2"
+     * to support list in the key series "key[index]"
+     * <p>
      * to return all data as a {@link Map} send "." as a key
      *
      * @param key   the path to the wanted data can be a single key or a series of keys
@@ -251,9 +280,33 @@ public class JSONReader {
      */
     public <T> Map<String, T> getMapAs(String key, Class<T> clazz) {
         if (key.equals("."))
-            return parseObjectToMap(data, clazz);
+            return changeEnvIfEnabled(
+                    parseObjectToMap(data, clazz)
+            );
 
         return parseObjectToMap(get(key), clazz);
+    }
+
+    /**
+     * Fetch a single piece of data from the YAML file using a single key or a series of keys
+     * <p>
+     * to support key series use a dot to separate keys "key1.key2"
+     * to support list in the key series "key[index]"
+     * <p>
+     * to return all data as a {@link Map} send "." as a key
+     *
+     * @param key     the path to the wanted data can be a single key or a series of keys
+     * @param parsing a {@link Function} take an object and return the wanted type of the map values
+     * @param <T>     The class type
+     * @return the wanted value as {@link Map} of {@link String} and {@link T}
+     */
+    public <T> Map<String, T> getMapAs(String key, Function<Object, T> parsing) {
+        if (key.equals("."))
+            return changeEnvIfEnabled(
+                    parseObjectToMap(data, parsing)
+            );
+
+        return parseObjectToMap(get(key), parsing);
     }
 
     /**
@@ -302,6 +355,7 @@ public class JSONReader {
      * <p>
      * Please note: the custom object must have a constructor without any arguments.
      * The keys in the JSON file must be the same as the custom object fields name.
+     * To read the all data as a Custom object send key to be "."
      * <p>
      * to support custom parsing please send the field name as the key of the map and the value should be the parsing function.
      * <p>
@@ -339,7 +393,7 @@ public class JSONReader {
             Object fieldValue = null;
             var fieldName = field.getName();
             var fieldType = field.getType();
-            var subKey = key + "." + fieldName;
+            var subKey = key.equals(".") ? fieldName : key + "." + fieldName;
 
             field.setAccessible(true);
 
@@ -378,7 +432,7 @@ public class JSONReader {
                         if (isList) {
                             var list = new ArrayList<>();
 
-                            var fetchedList = parseObjectToList(fetchedValue, Object.class);
+                            var fetchedList = parseObjectToList(fetchedValue, Parse.Object);
                             for (int i = 0; i < fetchedList.size(); i++) {
                                 list.add(
                                         getCustomObject(subKey + "[" + i + "]", customObject, customFieldParsing, supportedCustomObjects)
@@ -389,7 +443,7 @@ public class JSONReader {
                             var map = new HashMap<>();
 
                             var fetchedMap =
-                                    parseObjectToMap(fetchedValue, Object.class);
+                                    parseObjectToMap(fetchedValue, Parse.Object);
                             for (String mKey : fetchedMap.keySet()) {
                                 map.put(mKey, getCustomObject(subKey + "." + mKey, customObject, customFieldParsing, supportedCustomObjects));
                             }
@@ -449,7 +503,7 @@ public class JSONReader {
     }
 
     private Object getValueFromMap(Object obj, String key) {
-        var map = parseObjectToMap(obj, Object.class);
+        var map = changeEnvIfEnabled(parseObjectToMap(obj, Parse.Object));
 
         if (!map.containsKey(key)) {
             throw new InvalidKeyException("This key [" + key + "] does not exist in [" + obj + "]");
@@ -459,7 +513,7 @@ public class JSONReader {
     }
 
     private Object getValueFromList(Object obj, Integer index) {
-        var list = parseObjectToList(obj, Object.class);
+        var list = parseObjectToList(obj, Parse.Object);
 
         if (index >= list.size()) {
             throw new InvalidKeyException("This index [" + index + "] is out of the boundary of [" + obj + "]");
@@ -469,12 +523,25 @@ public class JSONReader {
     }
 
     private Object changeVariablesIfExist(Object obj) {
-        if (vars == null) return obj;
+        var globalVariables = ConfigHandler.getInstance().getGlobalVariables();
+        var stringObj = Parse.String.apply(obj);
 
-        var stringObj = String.valueOf(obj);
+        if ((vars == null && globalVariables.isEmpty()) || !stringObj.matches(".*\\$\\{.+}.*"))
+            return obj;
 
-        for (String key : vars.keySet()) {
-            stringObj = stringObj.replaceAll("\\$\\{" + key + "}", String.valueOf(vars.get(key)));
+        if (vars != null) {
+            for (String key : vars.keySet()) {
+                stringObj = stringObj
+                        .replaceAll("\\$\\{" + key + "}", Parse.String.apply(vars.get(key)));
+            }
+        }
+
+        if (globalVariables.isPresent()) {
+            var gVars = globalVariables.get();
+            for (String key : gVars.keySet()) {
+                stringObj = stringObj
+                        .replaceAll("\\$\\{" + key + "}", Parse.String.apply(gVars.get(key)));
+            }
         }
 
         return stringObj;
@@ -500,14 +567,16 @@ public class JSONReader {
     }
 
     private Map<String, Object> getJSONVariables() {
-        var jsonVarsKey = JSON.DEFAULT_VARIABLES_KEY;
-
         Map<String, Object> variables = null;
         try {
-            variables = getMapAs(jsonVarsKey, Object.class);
+            variables = getMapAs("variables", Parse.Object);
         } catch (InvalidKeyException | NotAMapException ignore) {
         }
 
-        return variables;
+        return changeEnvIfEnabled(variables);
+    }
+
+    private <T> Map<String, T> changeEnvIfEnabled(Map<String, T> map) {
+        return this.enableEnv ? changeEnvironmentsKeys(map) : map;
     }
 }

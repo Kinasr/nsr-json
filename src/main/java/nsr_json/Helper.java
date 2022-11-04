@@ -14,7 +14,8 @@ import java.util.function.Predicate;
 import java.util.regex.Pattern;
 
 class Helper {
-    protected final static String KEY_CONTAINS_LIST_REGEX = "^[-a-zA-Z\\d_!@#$%^&*()+=|\\\\/?><\"'{}~]*(\\[\\d+])+$";
+//    protected final static String KEY_CONTAINS_LIST_REGEX = "^[-a-zA-Z\\d_!@#$%^&*()+=|\\\\/?><\"'{}~]*(\\[\\d+])+$";
+    protected final static String KEY_CONTAINS_LIST_REGEX = "^.*(\\[\\d+])+$";
     protected final static String NUMBER_IN_SQUARE_BRACKETS_REGEX = "\\[\\d+]";
     protected final static String SQUARE_BRACKETS_REGEX = "[\\[\\]]";
     protected final static String KEY_SEPARATOR_REGEX = "\\.";
@@ -113,6 +114,23 @@ class Helper {
     }
 
     /**
+     * Used internally to parse {@link Object} to be a {@link List<T>}
+     *
+     * @param obj     the value wanted to be parsed
+     * @param parsing the parsing function
+     * @param <T>     the wanted type
+     * @return the value as {@link List<T>}
+     */
+    protected static <T> List<T> parseObjectToList(Object obj, Function<Object, T> parsing) {
+        if (obj instanceof List<?> list) {
+            return list.stream()
+                    .map(parsing).toList();
+        }
+
+        throw new NotAListException();
+    }
+
+    /**
      * Used internally to parse {@link Object} to be a {@link Map} of {@link String} and {@link T}
      *
      * @param obj   the value wanted to be parsed
@@ -133,6 +151,26 @@ class Helper {
     }
 
     /**
+     * Used internally to parse {@link Object} to be a {@link Map} of {@link String} and {@link T}
+     *
+     * @param obj     the value wanted to be parsed
+     * @param parsing the parsing function
+     * @param <T>     the wanted type
+     * @return the value as {@link Map} of {@link String} and {@link T}
+     */
+    protected static <T> Map<String, T> parseObjectToMap(Object obj, Function<Object, T> parsing) {
+        if (obj instanceof Map<?, ?> map) {
+            var nMap = new HashMap<String, T>();
+            map.forEach(
+                    (k, v) -> nMap.put(k.toString(), parsing.apply(v))
+            );
+            return nMap;
+        }
+
+        throw new NotAMapException();
+    }
+
+    /**
      * Used internally to parse a {@link String} to a {@link Calendar}
      *
      * @param stringDate date in string
@@ -141,13 +179,15 @@ class Helper {
      * @return date as {@link Calendar}
      */
     protected static Calendar parseStringToCalender(String stringDate, String dateFormat, String timeZone) {
-        var calendar = (timeZone == null || timeZone.isEmpty()) ?
+
+        var calendar = (timeZone == null || timeZone.isBlank()) ?
                 Calendar.getInstance() :
                 Calendar.getInstance(TimeZone.getTimeZone(timeZone));
 
         try {
             calendar.setTime(new SimpleDateFormat(
-                    (dateFormat == null || dateFormat.isEmpty()) ? DEFAULT_DATE_FORMAT : dateFormat
+                    (dateFormat == null || dateFormat.isBlank()) ?
+                            DEFAULT_DATE_FORMAT : dateFormat
             )
                     .parse(stringDate));
         } catch (ParseException e) {
@@ -177,5 +217,42 @@ class Helper {
      */
     protected static String prepareFilePath(String filePath) {
         return filePath.matches(".*.json$") ? filePath : filePath + ".json";
+    }
+
+    /**
+     * Changing the environments in the given map.
+     * It receives a list of environments and changing them by the order
+     * @param map the map wanted to change environments in
+     * @return the same map that received but with changing the environments
+     * @param <T> generic type
+     */
+    protected static <T> Map<String, T> changeEnvironmentsKeys(Map<String, T> map) {
+        var environments = ConfigHandler.getInstance().getEnvironments();
+
+        if (environments.isEmpty() || map == null)
+            return map;
+
+        var keysWithEnv = map.keySet()
+                .stream()
+                .filter(k -> k.matches(".+@.+"))
+                .toList();
+
+        environments.get().forEach(
+                environment -> keysWithEnv.forEach(
+                        key -> {
+                            var env = "@" + environment;
+                            if (key.endsWith(env)) {
+                                var newKey = key.replace(env, "");
+                                if (!map.containsKey(newKey)) {
+                                    var value = map.get(key);
+                                    map.remove(key);
+                                    map.put(newKey, value);
+                                }
+                            }
+                        }
+                )
+        );
+
+        return map;
     }
 }
